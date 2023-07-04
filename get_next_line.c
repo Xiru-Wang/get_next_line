@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/04 18:43:12 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/04 21:04:41 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,12 @@ buf 是一个指针，指向一个缓冲区，用于存储从文件描述符读�
 count 是请求读取的字节数
 https://github.com/jdecorte-be/42-Get-next-line/blob/master/get_next_line.c
 
-schroeder_jan@posteo.de
 */
+
+static char	*read_file(int fd, char *stash);
+static char	*get_line(char *stash);
+static char *reset_stash(char *stash);
+
 
 char	*get_next_line(int fd)
 {
@@ -32,29 +36,26 @@ char	*get_next_line(int fd)
 		return (NULL);
 	stash = read_file(fd, stash);
 	if (!stash)
-	{
-		free(stash);//?
-		stash = NULL;//?
 		return (NULL);
-	}
-	line = get_line(stash);//get a line from stash
+	line = get_line(stash);
 	stash = reset_stash(stash);
 	return (line);
 }
 
-static char *read_file(int fd, char *stash)
+static char	*read_file(int fd, char *stash)
 {
 	ssize_t	read_byte;//signed size_t
 	char	*buffer;
 	char	*temp;
 
+	if (!stash)//if stash is empty...
+		stash = (char *)malloc(1);//stash[0]= 0;??
 	buffer = (char *)malloc(BUFFER_SIZE + 1);
-	if(!buffer)
+	if (!buffer)
 		return (NULL);
-	// 当 read() 函数返回值为 0 时，表示已经读取到了文件的结尾（EOF）。
 	while ((read_byte = read(fd, buffer, BUFFER_SIZE)) > 0)
 	{
-		buffer[read_byte] = '\0';//手动添加string
+		buffer[read_byte] = '\0';//null terminated string
 		temp = stash;
 		stash = ft_strjoin(temp, buffer);
 		free(temp);
@@ -66,8 +67,7 @@ static char *read_file(int fd, char *stash)
 		free(buffer);
 		return (NULL);
 	}
-	//if (read_byte == 0)//read nothing, break the loop
-	//	break;
+	//if (read_byte == 0)//EOF
 	free(buffer);
 	return (stash);
 }
@@ -78,9 +78,11 @@ static char	*get_line(char *stash)
 	char			*line;
 
 	i = 0;
+	if (stash[i] == 0)//no line to return
+		return (NULL);
 	while(stash[i] && stash[i]!= '\n')
 		i++;
-	line = (char *)malloc(i + 2);//为目标行的字符数（包括换行符）加上空字符预留的空间
+	line = (char *)malloc(i + 2);// \n + \0
 	if(!line)
 		return (NULL);
 	i = 0;
@@ -104,10 +106,10 @@ static char *reset_stash(char *stash)
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
-	if (stash[i] == 0)//end of line
+	if (stash[i] == 0)//end of line, why not first?
 	{
-		free(stash);//不懂这一步
-		return (NULL);//不懂
+		free(stash);
+		return (NULL);
 	}
 	new = (char *)malloc(ft_strlen(stash) - i + 1);
 	if (!new)
@@ -116,10 +118,9 @@ static char *reset_stash(char *stash)
 	k = 0;
 	while (stash[i])
 		new[k++] = stash[i++];
-	free(stash);//复制完剩饭，free原来的
+	free(stash);
 	return (new);
 }
-
 
 int	main()
 {
@@ -128,4 +129,3 @@ int	main()
 	close(fd);
 	return (0);
 }
-//...ErQSHTv6ewY3NF8//
