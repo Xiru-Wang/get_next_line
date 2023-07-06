@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/04 21:04:41 by xiwang           ###   ########.fr       */
+/*   Updated: 2023/07/06 23:14:46 by xiruwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,61 +14,62 @@
 
 /*
 ssize_t read(int fd, void *buf, size_t nbyte);
-read() attempts to read nbyte bytes of data from the object
-fd 是一个已打开的文件描述符，从中读取数据。这个文件描述符可以是一个文件，也可以是一个设备，或者是一个 socket 等。
-buf 是一个指针，指向一个缓冲区，用于存储从文件描述符读取的数据。
-count 是请求读取的字节数
+[read()] attempts to read nbyte bytes of data from the object to buf
 https://github.com/jdecorte-be/42-Get-next-line/blob/master/get_next_line.c
+[Static local variables] value persist across function calls
+1. a loop to read the file in chunks/blocks
+2. append it to a static var(stash)
+3. extract(copy) a single line, and return it as a string
+4. reset the stash, prepre for the next call
 
 */
 
 static char	*read_file(int fd, char *stash);
 static char	*get_line(char *stash);
-static char *reset_stash(char *stash);
-
+static char	*get_rest(char *stash);
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;//temp storage
+	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || read(fd, 0 , 0) < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || read(fd, 0, 0) < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	stash = read_file(fd, stash);
 	if (!stash)
 		return (NULL);
 	line = get_line(stash);
-	stash = reset_stash(stash);
+	stash = get_rest(stash);
 	return (line);
 }
 
 static char	*read_file(int fd, char *stash)
 {
-	ssize_t	read_byte;//signed size_t
-	char	*buffer;
+	ssize_t	bytes;
 	char	*temp;
 
-	if (!stash)//if stash is empty...
-		stash = (char *)malloc(1);//stash[0]= 0;??
-	buffer = (char *)malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (NULL);
-	while ((read_byte = read(fd, buffer, BUFFER_SIZE)) > 0)
+	if (!stash)
 	{
-		buffer[read_byte] = '\0';//null terminated string
-		temp = stash;
-		stash = ft_strjoin(temp, buffer);
+		stash = (char *)malloc(1);
+		stash[0] = '\0';
+	}
+	temp = (char *)malloc(BUFFER_SIZE + 1);
+	if (!temp)
+		return (NULL);
+	bytes = 1;
+	while (bytes > 0 && !ft_strchr(stash, '\n'))
+	{
+		bytes = read(fd, temp, BUFFER_SIZE);
+		temp[bytes] = '\0';
+		stash = ft_strjoin(stash, temp);
+	}
+	if (bytes == -1)
+	{
 		free(temp);
-		if (strchr(buffer, '\n'))
-			break;
-	}
-	if (read_byte == -1)//error to read
-	{
-		free(buffer);
+		free(stash);
 		return (NULL);
 	}
-	//if (read_byte == 0)//EOF
-	free(buffer);
+	free(temp);
 	return (stash);
 }
 
@@ -78,12 +79,12 @@ static char	*get_line(char *stash)
 	char			*line;
 
 	i = 0;
-	if (stash[i] == 0)//no line to return
+	if (stash[i] == 0)
 		return (NULL);
-	while(stash[i] && stash[i]!= '\n')
+	while (stash[i] && stash[i] != '\n')
 		i++;
-	line = (char *)malloc(i + 2);// \n + \0
-	if(!line)
+	line = (char *)malloc(i + 2);
+	if (!line)
 		return (NULL);
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
@@ -91,13 +92,20 @@ static char	*get_line(char *stash)
 		line[i] = stash[i];
 		i++;
 	}
-	//if (stash[i] && stash[i] == '\n')
-	line[i] = '\n';
-	line[i++] = 0;
+	if (stash[i] && stash[i] == '\n')
+	{
+		line[i] = stash[i];
+		i++;
+	}
+	line[i] = 0;
 	return (line);
 }
 
-static char *reset_stash(char *stash)
+/*
+copy the rest content in the stash, and return it
+*/
+
+static char	*get_rest(char *stash)
 {
 	char			*new;
 	unsigned int	i;
@@ -106,7 +114,7 @@ static char *reset_stash(char *stash)
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
-	if (stash[i] == 0)//end of line, why not first?
+	if (stash[i] == 0)
 	{
 		free(stash);
 		return (NULL);
@@ -114,18 +122,28 @@ static char *reset_stash(char *stash)
 	new = (char *)malloc(ft_strlen(stash) - i + 1);
 	if (!new)
 		return (NULL);
-	i++; // skip '\n'
+	i++;
 	k = 0;
 	while (stash[i])
 		new[k++] = stash[i++];
+	new[k] = '\0';
 	free(stash);
 	return (new);
 }
 
-int	main()
-{
-	int fd = open("filename.txt", O_RDONLY);
-	get_next_line(fd);
-	close(fd);
-	return (0);
-}
+// int	main()
+// {
+// 	char *line;
+// 	int i = 0;
+
+// 	int fd = open("read_error.txt", O_RDONLY);
+// 	while (i < 10)
+// 	{
+// 		line = get_next_line(fd);
+// 		printf("%d: %s", i, line);
+// 		i++;
+// 	}
+// 	close(fd);
+// 	return (0);
+// }
+//gcc -Wall -Werror -Wextra -D BUFFER_SIZE=10000 get_next_line.c get_next_line_utils.c
