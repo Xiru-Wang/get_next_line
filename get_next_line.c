@@ -6,7 +6,7 @@
 /*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/06 23:14:46 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/07 16:42:56 by xiruwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,16 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
+static char	*join_free(char *s1, char *s2)
+{
+	char	*temp;
+
+	temp = ft_strjoin(s1, s2);
+	free(s1);
+	s1 = NULL;
+	return (temp);
+}
+
 static char	*read_file(int fd, char *stash)
 {
 	ssize_t	bytes;
@@ -57,17 +67,17 @@ static char	*read_file(int fd, char *stash)
 	if (!temp)
 		return (NULL);
 	bytes = 1;
-	while (bytes > 0 && !ft_strchr(stash, '\n'))
+	while (bytes > 0 && ft_strchr(stash, '\n') == NULL)
 	{
 		bytes = read(fd, temp, BUFFER_SIZE);
+		if (bytes == -1)
+		{
+			free(temp);
+			free(stash);
+			return (NULL);
+		}
 		temp[bytes] = '\0';
-		stash = ft_strjoin(stash, temp);
-	}
-	if (bytes == -1)
-	{
-		free(temp);
-		free(stash);
-		return (NULL);
+		stash = join_free(stash, temp);
 	}
 	free(temp);
 	return (stash);
@@ -79,7 +89,7 @@ static char	*get_line(char *stash)
 	char			*line;
 
 	i = 0;
-	if (stash[i] == 0)
+	if (!stash || !stash[i])
 		return (NULL);
 	while (stash[i] && stash[i] != '\n')
 		i++;
@@ -111,6 +121,8 @@ static char	*get_rest(char *stash)
 	unsigned int	i;
 	unsigned int	k;
 
+	if (!stash)
+		return (NULL);
 	i = 0;
 	while (stash[i] && stash[i] != '\n')
 		i++;
@@ -146,4 +158,5 @@ static char	*get_rest(char *stash)
 // 	close(fd);
 // 	return (0);
 // }
-//gcc -Wall -Werror -Wextra -D BUFFER_SIZE=10000 get_next_line.c get_next_line_utils.c
+//gcc -Wall -Werror -Wextra -D BUFFER_SIZE=42
+//get_next_line.c get_next_line_utils.c

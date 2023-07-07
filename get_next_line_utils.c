@@ -6,7 +6,7 @@
 /*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:29 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/06 18:20:04 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/07 17:36:42 by xiruwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	*ft_strchr(const char *s, int c)
 {
 	if (!s)
-		return (0);
+		return (NULL);
 	while (*s)
 	{
 		if (*s == (char)c)
@@ -24,11 +24,10 @@ char	*ft_strchr(const char *s, int c)
 	}
 	if ((char)c == '\0')
 		return ((char *)s);
-	return (0);
+	return (NULL);
 }
 //return (NULL)
 
-//尽管此函数会修改指针s的值，但由于C语言的参数是按值传递的，因此这种修改不会影响到原始字符串或者函数外部的指针。
 size_t	ft_strlen(const char *s)
 {
 	size_t	i;
@@ -61,7 +60,6 @@ char	*ft_strjoin(char *s1, char *s2)
 	while (s2[k])
 		new[i++] = s2[k++];
 	new[i] = 0;
-	free(s1);
 	return (new);
 }
 //free(s1);!! s[0] != 0
