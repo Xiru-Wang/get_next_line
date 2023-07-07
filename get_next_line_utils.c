@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:29 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/07 17:36:42 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/07 18:28:23 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	while (s2[k])
 		new[i++] = s2[k++];
 	new[i] = 0;
+	free(s1);
 	return (new);
 }
 //free(s1);!! s[0] != 0

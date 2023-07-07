@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/07 16:42:56 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/07 19:52:08 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,11 @@
 /*
 ssize_t read(int fd, void *buf, size_t nbyte);
 [read()] attempts to read nbyte bytes of data from the object to buf
-https://github.com/jdecorte-be/42-Get-next-line/blob/master/get_next_line.c
 [Static local variables] value persist across function calls
 1. a loop to read the file in chunks/blocks
 2. append it to a static var(stash)
 3. extract(copy) a single line, and return it as a string
 4. reset the stash, prepre for the next call
-
 */
 
 static char	*read_file(int fd, char *stash);
@@ -33,7 +31,7 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || read(fd, 0, 0) < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	stash = read_file(fd, stash);
 	if (!stash)
@@ -41,16 +39,6 @@ char	*get_next_line(int fd)
 	line = get_line(stash);
 	stash = get_rest(stash);
 	return (line);
-}
-
-static char	*join_free(char *s1, char *s2)
-{
-	char	*temp;
-
-	temp = ft_strjoin(s1, s2);
-	free(s1);
-	s1 = NULL;
-	return (temp);
 }
 
 static char	*read_file(int fd, char *stash)
@@ -63,21 +51,21 @@ static char	*read_file(int fd, char *stash)
 		stash = (char *)malloc(1);
 		stash[0] = '\0';
 	}
-	temp = (char *)malloc(BUFFER_SIZE + 1);
+	temp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!temp)
 		return (NULL);
 	bytes = 1;
 	while (bytes > 0 && ft_strchr(stash, '\n') == NULL)
 	{
 		bytes = read(fd, temp, BUFFER_SIZE);
-		if (bytes == -1)
-		{
-			free(temp);
-			free(stash);
-			return (NULL);
-		}
 		temp[bytes] = '\0';
-		stash = join_free(stash, temp);
+		stash = ft_strjoin(stash, temp);
+	}
+	if (bytes == -1)
+	{
+		free(temp);
+		free(stash);
+		return (NULL);
 	}
 	free(temp);
 	return (stash);
@@ -93,7 +81,7 @@ static char	*get_line(char *stash)
 		return (NULL);
 	while (stash[i] && stash[i] != '\n')
 		i++;
-	line = (char *)malloc(i + 2);
+	line = (char *)malloc(sizeof(char) * (i + 2));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -131,7 +119,7 @@ static char	*get_rest(char *stash)
 		free(stash);
 		return (NULL);
 	}
-	new = (char *)malloc(ft_strlen(stash) - i + 1);
+	new = (char *)malloc(sizeof(char) * (ft_strlen(stash) - i + 1));
 	if (!new)
 		return (NULL);
 	i++;
@@ -153,10 +141,11 @@ static char	*get_rest(char *stash)
 // 	{
 // 		line = get_next_line(fd);
 // 		printf("%d: %s", i, line);
+// 		free(line);
 // 		i++;
 // 	}
 // 	close(fd);
 // 	return (0);
 // }
-//gcc -Wall -Werror -Wextra -D BUFFER_SIZE=42
-//get_next_line.c get_next_line_utils.c
+//cc -g3 -Wall -Werror -Wextra -D BUFFER_SIZE=1000000 get_next_line.c get_next_line_utils.c
+//valgrind --leak-check=full ./a.out
