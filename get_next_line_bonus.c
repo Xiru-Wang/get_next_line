@@ -1,6 +1,17 @@
-//#header
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/10 19:45:11 by xiwang            #+#    #+#             */
+/*   Updated: 2023/07/10 20:45:41 by xiwang           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
+//OPEN_MAX
 
 static char *read_file(int fd, char *str);
 static char *get_line(char *str);
@@ -8,7 +19,7 @@ static char *get_rest(char *str);
 
 char	*get_next_line(int fd)
 {
-	static char	*saved[OPEN_MAX];
+	static char	*saved[4096];
 	char		*line;
 
 	if(fd < 0 || BUFFER_SIZE <= 0)
@@ -43,6 +54,7 @@ static char	*read_file(int fd, char *str)
 		if( n == -1)
 		{
 			free(temp);
+			free(str);
 			return (NULL);
 		}
 		temp[n] = 0;
@@ -59,7 +71,10 @@ static char	*get_line(char *str)
 
 	i = 0;
 	if (str[i] == 0)
+	{
+		free(str);
 		return (NULL);
+	}
 	while (str[i] && str[i] != '\n')
 		i++;
 	line = (char *)malloc(i + 2);

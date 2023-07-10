@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/10 18:26:22 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/10 20:41:48 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,10 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)//if read == 0, next call might be an issue
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	stash = read_file(fd, stash);//check read here
+	stash = read_file(fd, stash);
 	if (!stash)
-		//free(stash);//no need to free, bc i didnt malloc stash
 		return (NULL);
 	line = get_line(stash);
 	stash = get_rest(stash);
@@ -47,12 +46,12 @@ static char	*read_file(int fd, char *stash)
 	ssize_t	bytes;
 	char	*temp;
 
-	if (stash == NULL)//the first line, stash is empty
+	if (stash == NULL)
 	{
 		stash = (char *)malloc(1);
 		if (!stash)
 			return (NULL);
-		stash[0] = '\0'; // for strjoin
+		stash[0] = '\0';
 	}
 	temp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!temp)
@@ -61,15 +60,14 @@ static char	*read_file(int fd, char *stash)
 	while (bytes > 0 && ft_strchr(stash, '\n') == NULL)
 	{
 		bytes = read(fd, temp, BUFFER_SIZE);
-		//read(0): empty file or EOF
 		if (bytes == -1)
 		{
 			free(temp);
+			free(stash);
 			return (NULL);
 		}
-		temp[bytes] = '\0';//temp[0]
-		stash = ft_strjoin(stash, temp);//return stash[0]
-		//terminate the rest and return it
+		temp[bytes] = '\0';
+		stash = ft_strjoin(stash, temp);
 	}
 	free(temp);
 	return (stash);
@@ -81,8 +79,8 @@ static char	*get_line(char *stash)
 	char			*line;
 
 	i = 0;
-	if (!stash[i]) //if stash[0]== 0 (read 0 byte)
-		return (NULL);//nothing to return
+	if (!stash[i])
+		return (NULL);
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	line = (char *)malloc(sizeof(char) * (i + 2));
@@ -96,7 +94,7 @@ static char	*get_line(char *stash)
 	}
 	if (stash[i] == '\n')
 	{
-		line[i] = stash[i];//copy the '\n'
+		line[i] = stash[i];
 		i++;
 	}
 	line[i] = 0;
@@ -152,6 +150,5 @@ static char	*get_rest(char *stash)
 // 	close(fd);
 // 	return (0);
 // }
-//cc -g3 -Wall -Werror -Wextra -D
-//BUFFER_SIZE=1000000 get_next_line.c get_next_line_utils.c
+//cc -g3 -Wall -Werror -Wextra -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c
 //valgrind --leak-check=full ./a.out

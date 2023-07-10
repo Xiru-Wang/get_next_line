@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:29 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/10 18:02:14 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/10 20:36:39 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-/*important*/
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*new;
