@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/11 15:38:19 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/11 18:18:47 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static char	*read_file(int fd, char *stash)
 		if (bytes == -1)
 		{
 			free(temp);
-			//free(stash);//should I? did not malloc
+			free(stash);
 			return (NULL);
 		}
 		temp[bytes] = '\0';
@@ -75,7 +75,6 @@ static char	*get_line(char *stash)
 
 	i = 0;
 	if (!stash[i])
-		//free(stash);//wrong get_rest还要用
 		return (NULL);
 	while (stash[i] && stash[i] != '\n')
 		i++;
@@ -145,5 +144,6 @@ static char	*get_rest(char *stash)
 // 	close(fd);
 // 	return (0);
 // }
-//cc -g3 -Wall -Werror -Wextra -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c
+//cc -g3 -Wall -Werror -Wextra -D BUFFER_SIZE=42
+//get_next_line.c get_next_line_utils.c
 //valgrind --leak-check=full ./a.out

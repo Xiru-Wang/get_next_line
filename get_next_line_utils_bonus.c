@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
+/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 19:45:29 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/11 17:20:08 by xiruwang         ###   ########.fr       */
+/*   Updated: 2023/07/11 18:13:10 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	new = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!new || !s2)
-	{
-		free(s1);//should i ?
 		return (NULL);
-	}
 	i = -1;
 	while (s1[++i])
 		new[i] = s1[i];
