@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:29 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/10 20:36:39 by xiwang           ###   ########.fr       */
+/*   Updated: 2023/07/11 17:25:29 by xiruwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ size_t	ft_strlen(const char *s)
 	i = 0;
 	if (!s)
 		return (0);
-	while (*s++)
+	while (s[i])
 		i++;
 	return (i);
 }
@@ -45,15 +45,19 @@ char	*ft_strjoin(char *s1, char *s2)
 	size_t	i;
 	size_t	k;
 
-	new = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!new || !s1 || !s2)
-		return (NULL);
-	i = 0;
-	while (s1[i])
+	if (s1 == NULL)
 	{
-		new[i] = s1[i];
-		i++;
+		s1 = (char *)malloc(1);
+		if (!s1)
+			return (NULL);
+		s1[0] = '\0';
 	}
+	new = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (!new || !s2)
+		return (NULL);
+	i = -1;
+	while (s1[++i])
+		new[i] = s1[i];
 	k = 0;
 	while (s2[k])
 		new[i++] = s2[k++];
@@ -61,4 +65,3 @@ char	*ft_strjoin(char *s1, char *s2)
 	free(s1);
 	return (new);
 }
-//free(s1);!! s[0] != 0

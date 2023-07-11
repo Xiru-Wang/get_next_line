@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
+/*   By: xiruwang <xiruwang@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/05 16:40:34 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/10 20:41:48 by xiwang           ###   ########.fr       */
+/*   Updated: 2023/07/11 15:38:19 by xiruwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,12 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
+//be careful with mem leak: malloc will be used in ft_strjoin
 static char	*read_file(int fd, char *stash)
 {
 	ssize_t	bytes;
 	char	*temp;
 
-	if (stash == NULL)
-	{
-		stash = (char *)malloc(1);
-		if (!stash)
-			return (NULL);
-		stash[0] = '\0';
-	}
 	temp = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!temp)
 		return (NULL);
@@ -63,7 +57,7 @@ static char	*read_file(int fd, char *stash)
 		if (bytes == -1)
 		{
 			free(temp);
-			free(stash);
+			//free(stash);//should I? did not malloc
 			return (NULL);
 		}
 		temp[bytes] = '\0';
@@ -73,6 +67,7 @@ static char	*read_file(int fd, char *stash)
 	return (stash);
 }
 
+//if the end of file was reached and does not end with a \n character.
 static char	*get_line(char *stash)
 {
 	unsigned int	i;
@@ -80,6 +75,7 @@ static char	*get_line(char *stash)
 
 	i = 0;
 	if (!stash[i])
+		//free(stash);//wrong get_rest还要用
 		return (NULL);
 	while (stash[i] && stash[i] != '\n')
 		i++;
@@ -101,7 +97,6 @@ static char	*get_line(char *stash)
 	return (line);
 }
 
-//if the end of file was reached and does not end with a \n character.
 /*
 copy the rest content in the stash, and return it
 */
