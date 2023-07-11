@@ -6,12 +6,12 @@
 /*   By: xiwang <xiwang@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 19:45:11 by xiwang            #+#    #+#             */
-/*   Updated: 2023/07/11 19:01:39 by xiwang           ###   ########.fr       */
+/*   Updated: 2023/07/11 19:04:48 by xiwang           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-//OPEN_MAX
+//OPEN_MAX: ulimit -a
 
 char	*read_file(int fd, char *str);
 char	*get_line_bonus(char *str);
